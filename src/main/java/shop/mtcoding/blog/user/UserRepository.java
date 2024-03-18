@@ -13,9 +13,10 @@ public class UserRepository {
 
 
     @Transactional
-    public User update(int sessionId, UserRequest.UpdateDTO requestDTO) { // DTO를 안만들고 꺼내서 넘겨도 됨 -> 재사용 가능
-        User user = findById(sessionId);
-        user.update(requestDTO);
+    public User updateById(int id, String password, String email) { // DTO를 안만들고 꺼내서 넘겨도 됨 -> 재사용 가능
+        User user = findById(id);
+        user.setPassword(password);
+        user.setEmail(email);
         return user;
     } // 더티체킹
 

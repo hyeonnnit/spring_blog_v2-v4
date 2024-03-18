@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import shop.mtcoding.blog._core.utils.exception.Exception401;
+
 @RequiredArgsConstructor
 @Controller
 public class UserController {
@@ -27,10 +29,6 @@ public class UserController {
     @PostMapping("/login")
     public String login(UserRequest.LoginDTO reqDTO){
         User sessionUser = userRepository.findByUsernameAndPassword(reqDTO);
-
-//        if (sessionUser == null){
-//            return "redirect:/login-form";
-//        }
         session.setAttribute("sessionUser",sessionUser);
         return "redirect:/";
     }
@@ -42,13 +40,18 @@ public class UserController {
     @PostMapping("/user/update")
     public String update(UserRequest.UpdateDTO reqDTO){
         User sessionUser = (User) session.getAttribute("sessionUser");
-        userRepository.update(sessionUser.getId(),reqDTO);
+        User newSessionUser = userRepository.updateById(sessionUser.getId(),reqDTO.getPassword(), reqDTO.getEmail());
+        session.setAttribute("sessionUser",newSessionUser);
+        System.out.println(sessionUser);
         return "redirect:/";
     }
 
     @GetMapping("/user/update-form")
     public String updateForm(HttpServletRequest request) {
         User sessionUser = (User) session.getAttribute("sessionUser");
+        if (sessionUser ==null){
+            throw new Exception401("인증되지 않았습니다. 로그인이 필요합니다.");
+        }
         User user = userRepository.findById(sessionUser.getId());
         request.setAttribute("user",user);
         return "user/update-form";

@@ -43,23 +43,16 @@ public class UserRepositoryTest {
         userRepository.save(user);
     }
     @Test
-        public void findByUsername_test(){
-            // given
-        String username = "ssar";
-        String password = "1234";
-//             when
-//        User user = userRepository.findByUsernameAndPassword();
-//        if (user == null){
-//            System.out.println("login_test: 아이디 혹은 비밀번호가 틀렸습니다.");
-//        }else {
-//            if (user.getPassword().equals(password)){
-//                System.out.println("login_test: 로그인 되었습니다.");
-//            }else {
-//                System.out.println("login_test: 비밀번호가 틀렸습니다.");
-//            }
-//        }
-//             then
-//        Assertions.assertThat().
-        }
+    public void findByUsername_test(){
+        // given
+        UserRequest.LoginDTO reqDTO = new UserRequest.LoginDTO();
+        reqDTO.setUsername("ssar");
+        reqDTO.setPassword("1234");
+
+        // when
+        User user = userRepository.findByUsernameAndPassword(reqDTO);
+
+        // then
+    }
 
 }
