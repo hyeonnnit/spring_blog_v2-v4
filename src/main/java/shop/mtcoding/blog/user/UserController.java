@@ -3,9 +3,12 @@ package shop.mtcoding.blog.user;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import shop.mtcoding.blog._core.errors.exception.Exception400;
 import shop.mtcoding.blog._core.errors.exception.Exception401;
 
 @RequiredArgsConstructor
@@ -16,10 +19,13 @@ public class UserController {
     private final HttpSession session;
 
     @PostMapping("/join")
-    public String join(UserRequest.SaveDTO reqDTO){
-        User sessionUser = userRepository.save(reqDTO.toEntity());
-        session.setAttribute("sessionUser",sessionUser);
-        return "redirect:/login-form";
+    public String join(UserRequest.SaveDTO reqDTO) throws Exception{
+        try {
+            userRepository.save(reqDTO.toEntity());
+        } catch (DataIntegrityViolationException e) {
+            throw new Exception400("동일한 이름이 존재합니다.");
+        }
+        return "redirect:/";
     }
     @GetMapping("/join-form")
     public String joinForm() {
@@ -28,9 +34,13 @@ public class UserController {
 
     @PostMapping("/login")
     public String login(UserRequest.LoginDTO reqDTO){
-        User sessionUser = userRepository.findByUsernameAndPassword(reqDTO);
-        session.setAttribute("sessionUser",sessionUser);
-        return "redirect:/";
+        try {
+            User sessionUser = userRepository.findByUsernameAndPassword(reqDTO);
+            session.setAttribute("sessionUser",sessionUser);
+            return "redirect:/";
+        } catch (EmptyResultDataAccessException e) {
+            throw new Exception401("이름 혹은 비밀번호가 틀렸습니다.");
+        }
     }
     @GetMapping("/login-form")
     public String loginForm() {
