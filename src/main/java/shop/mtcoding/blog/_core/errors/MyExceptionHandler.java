@@ -1,4 +1,4 @@
-package shop.mtcoding.blog._core.utils;
+package shop.mtcoding.blog._core.errors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
